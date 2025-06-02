@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>¿Quieres ser mi novia?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+  /* Reset */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background: radial-gradient(circle at center, #fad0c4, #ff7eb3);
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-align: center;
+    position: relative;
+  }
+  /* Floating hearts animation container */
+  .heart-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .heart {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #ffbfff;
+    clip-path: polygon(50% 0%, 61% 15%, 75% 15%, 85% 25%, 95% 50%, 75% 75%, 50% 100%, 25% 75%, 5% 50%, 15% 25%, 25% 15%, 39% 15%);
+    opacity: 0.85;
+    filter: drop-shadow(0 0 4px #f84a6f);
+    animation: floatUp linear forwards;
+  }
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0) scale(1);
+      opacity: 0.85;
+    }
+    100% {
+      transform: translateY(-150vh) scale(1.6);
+      opacity: 0;
+    }
+  }
+  /* Main container and card style */
+  .container {
+    background: rgba(255 255 255 / 0.15);
+    padding: 2.5rem 3rem;
+    border-radius: 2rem;
+    box-shadow:
+      0 4px 15px rgba(255, 99, 99, 0.35),
+      inset 0 0 60px 12px rgba(255, 52, 52, 0.25);
+    max-width: 480px;
+    backdrop-filter: saturate(180%) blur(18px);
+    position: relative;
+    z-index: 5;
+    user-select: none;
+    transition: transform 0.3s ease, opacity 0.35s ease;
+  }
+  h1 {
+    font-size: clamp(1.9rem, 5vw, 3rem);
+    margin-bottom: 2.4rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fff0f0;
+    text-shadow:
+      0 0 8px #ff5777,
+      0 0 16px #ff4b72,
+      0 0 32px #ff3b5a;
+  }
+  .btn {
+    cursor: pointer;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-weight: 700;
+    margin: 1rem 1.1rem 1rem 1.1rem;
+    padding: 1rem 3rem;
+    border-radius: 100px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: linear-gradient(45deg, #ff416c 0%, #ff4b2b 100%);
+    box-shadow: 0 6px 25px rgba(255, 65, 92, 0.8);
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    top:0; left:0;
+    width: 100%; height: 100%;
+    background: linear-gradient(45deg, #ff8a9c, #ff1f51);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: 1;
+    border-radius: 100px;
+  }
+  .btn:hover::before {
+    opacity: 0.25;
+  }
+  .btn:hover {
+    background: linear-gradient(45deg, #ff4b2b, #ff416c);
+    box-shadow: 0 12px 38px rgba(255, 58, 86, 0.95);
+    transform: scale(1.12);
+    z-index: 2;
+  }
+  .btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 5px 18px rgba(255, 58, 86, 0.9);
+  }
+  #no-btn.moving {
+    position: absolute;
+    animation: shake 0.32s ease-in-out;
+    z-index: 20;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-20px) rotate(-5deg); }
+    40%, 80% { transform: translateX(20px) rotate(5deg); }
+  }
+  .hidden {
+    display: none !important;
+  }
+  #message-page {
+    max-width: 620px;
+    background: rgba(255 255 255 / 0.2);
+    padding: 3rem 3.5rem;
+    border-radius: 2rem;
+    box-shadow:
+      0 5px 45px rgba(255, 72, 72, 0.55),
+      inset 0 0 80px 14px rgba(255, 25, 65, 0.3);
+    backdrop-filter: saturate(200%) blur(20px);
+    color: #ffe6e9;
+    text-align: left;
+    position: relative;
+    z-index: 5;
+    user-select: text;
+  }
+  #message-text {
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    line-height: 1.8;
+    margin-bottom: 3.5rem;
+    color: #ffeeee;
+    letter-spacing: 0.01em;
+    font-weight: 500;
+    text-shadow:
+      0 0 20px #ff7385,
+      0 0 40px #ff9aa1;
+  }
+  /* Sad message */
+  #sad-message {
+    margin-top: 2rem;
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    font-weight: 800;
+    color: #ff3244;
+    text-shadow:
+      0 0 12px #ff3244,
+      0 0 24px #ff2134;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+
+  /* Custom audio player */
+  #music-page {
+    max-width: 620px;
+    background: rgba(255 255 255 / 0.2);
+    padding: 2rem 3rem 3rem 3rem;
+    border-radius: 2rem;
+    box-shadow:
+      0 5px 45px rgba(255, 72, 72, 0.55),
+      inset 0 0 80px 14px rgba(255, 25, 65, 0.3);
+    backdrop-filter: saturate(200%) blur(20px);
+    color: #ffe6e9;
+    text-align: center;
+    position: relative;
+    z-index: 5;
+    user-select: none;
+  }
+
+  .player {
+    margin-top: 1.6rem;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .play-pause-btn {
+    background: linear-gradient(45deg, #ff416c 0%, #ff4b2b 100%);
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(255, 60, 90, 0.9);
+    color: #fff;
+    font-size: 28px;
+    transition: transform 0.2s ease-in-out, background 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+  }
+  .play-pause-btn:hover {
+    background: linear-gradient(45deg, #ff4b2b 0%, #ff416c 100%);
+    transform: scale(1.15);
+  }
+  .play-pause-btn:active {
+    transform: scale(0.95);
+  }
+
+  .progress-container {
+    position: relative;
+    flex: 1;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+
+  .progress {
+    background: #ff416c;
+    height: 100%;
+    width: 0;
+    border-radius: 20px;
+    transition: width 0.1s linear;
+    box-shadow:
+      0 0 10px #ff5678,
+      0 0 18px #ff416c;
+  }
+
+  .time {
+    font-weight: 600;
+    font-size: 0.95rem;
+    min-width: 48px;
+    letter-spacing: 0.02em;
+    color: #ffd7dd;
+    text-shadow: 0 0 4px #ff425b;
+    user-select: none;
+  }
+
+  /* Volume control */
+  .volume-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .volume-icon {
+    color: #ff798f;
+    text-shadow: 0 0 5px #ff5a74;
+    font-size: 1.4rem;
+    user-select: none;
+  }
+  .volume-slider {
+    -webkit-appearance: none;
+    width: 120px;
+    height: 6px;
+    border-radius: 5px;
+    background: rgba(255, 65, 70, 0.7);
+    cursor: pointer;
+    box-shadow: 0 0 8px #ff596c;
+    transition: background 0.3s ease;
+  }
+  .volume-slider:hover {
+    background: #ff416c;
+  }
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 7px #ff416c;
+    transition: background 0.3s ease;
+  }
+  .volume-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 7px #ff416c;
+  }
+
+  /* Responsive */
+  @media (max-width: 440px) {
+    .btn {
+      padding: 0.85rem 2rem;
+      margin: 0.75rem 0.7rem;
+      font-size: 1.1rem;
+    }
+    .play-pause-btn {
+      width: 48px;
+      height: 48px;
+      font-size: 24px;
+    }
+    .volume-slider {
+      width: 90px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="heart-container" aria-hidden="true" id="heart-container"></div>
+
+  <div id="initial-page" class="container" role="main" aria-label="Pregunta inicial">
+    <h1>¿QUIERES SER MI NOVIA?</h1>
+    <button id="yes-btn" class="btn" aria-label="Sí, quiero ser tu novia" role="button">Sí 💖</button>
+    <button id="no-btn" class="btn" aria-label="No, no quiero ser tu novia" role="button">No 😥</button>
+    <div id="sad-message" role="alert" aria-live="assertive" class="hidden"></div>
+  </div>
+
+  <div id="yes-page" class="container hidden" role="main" aria-label="Opciones si dice que sí">
+    <h1>¡Gracias por decir que sí! </h1>
+    <button id="btn-message" class="btn" aria-label="Mostrar un mensaje bonito" role="button">PICALE PA UN MENSAJE 
+    BONITO 🌷</button>
+    <button id="btn-music" class="btn" aria-label="Reproducir una canción hermosa" role="button">PICALE PARA ESCUCHAR
+     UNA CANCIÓN 🩷</button>
+    <button id="back-to-initial" class="btn" aria-label="Volver a la pregunta inicial" role="button">Volver</button>
+  </div>
+
+  <div id="message-page" class="container hidden" role="main" aria-label="Mensaje bonito">
+    <h1>Un mensaje para ti</h1>
+    <p id="message-text" tabindex="0">
+      Mi amor, desde que te conocí, mi mundo cambió completamente. Cada instante contigo es un regalo, una melodía que alegra mi corazón. Quiero que sepas que mis sentimientos son sinceros y que mi deseo es crecer contigo, compartir sueños, risas y momentos inolvidables. Eres mi inspiración, la razón de mi sonrisa más genuina y el refugio donde encuentro paz. Gracias por iluminar mis días con tu dulzura y por permitirme soñar juntos un futuro lleno de alegría y amor
+      
+                          
+                          ATENTAMENTE, TU NUEVO NOVIO EDUARDITO ❤️🌹.
+    </p>
+    <button id="back-to-yes" class="btn" aria-label="Volver a opciones de sí" role="button">Volver</button>
+  </div>
+
+  <div id="music-page" class="container hidden" role="main" aria-label="Reproductor de música">
+    <h1>Escucha esta canción para ti</h1>
+    <div class="player" aria-label="Control de reproductor de música">
+      <audio id="audio-player" preload="auto" tabindex="-1">
+        <source src="1.mp3" type="audio/mp3" />
+        Tu navegador no soporta la etiqueta de audio.
+      </audio>
+      <div class="controls">
+        <button id="play-pause" class="play-pause-btn" aria-label="Reproducir canción" title="Reproducir">►</button>
+        <div class="progress-container" aria-label="Barra de progreso de la canción" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress" id="progress"></div>
+        </div>
+        <div class="time" id="current-time" aria-live="polite">0:00</div>
+        <div class="time" id="duration-time">0:00</div>
+      </div>
+      <div class="volume-control">
+        <span class="volume-icon" aria-label="Volumen" title="Volumen">🔊</span>
+        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.01" aria-valuemin="0" aria-valuemax="1" aria-valuenow="1" aria-label="Control de volumen" />
+      </div>
+    </div>
+    <button id="back-to-yes-from-music" class="btn" aria-label="Volver a opciones de sí" role="button">Volver</button>
+  </div>
+
+<script>
+  // Floating hearts logic
+  const heartContainer = document.getElementById('heart-container');
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    const size = Math.random() * 16 + 14;
+    heart.style.width = size + 'px';
+    heart.style.height = size + 'px';
+    heart.style.animationDuration = (Math.random() * 7 + 5) + 's';
+    heart.style.animationTimingFunction = 'cubic-bezier(0.4, 0, 0.2, 1)';
+    heartContainer.appendChild(heart);
+    heart.addEventListener('animationend', () => heart.remove());
+  }
+  const heartRate = 300;
+  setInterval(createHeart, heartRate);
+
+  // DOM references
+  const yesBtn = document.getElementById('yes-btn');
+  const noBtn = document.getElementById('no-btn');
+  const initialPage = document.getElementById('initial-page');
+  const yesPage = document.getElementById('yes-page');
+  const messagePage = document.getElementById('message-page');
+  const musicPage = document.getElementById('music-page');
+  const btnMessage = document.getElementById('btn-message');
+  const btnMusic = document.getElementById('btn-music');
+  const backToYes = document.getElementById('back-to-yes');
+  const backToYesMusic = document.getElementById('back-to-yes-from-music');
+  const backToInitialFromYes = document.getElementById('back-to-initial');
+  const sadMessage = document.getElementById('sad-message');
+
+  // Player elements
+  const audio = document.getElementById('audio-player');
+  const playPauseBtn = document.getElementById('play-pause');
+  const progressContainer = document.querySelector('.progress-container');
+  const progressBar = document.getElementById('progress');
+  const currentTimeEl = document.getElementById('current-time');
+  const durationTimeEl = document.getElementById('duration-time');
+  const volumeSlider = document.getElementById('volume-slider');
+
+  let noClickCount = 0;
+  let isPlaying = false;
+  let animationFrameId;
+
+  // Accessibility focus helper
+  function trapFocus(element) {
+    element.setAttribute('tabindex', '-1');
+    element.focus();
+  }
+
+  // Fade in/out helpers
+  function fadeOut(el, cb) {
+    el.style.transition = "opacity 0.4s ease";
+    el.style.opacity = 0;
+    setTimeout(() => {
+      el.classList.add('hidden');
+      el.style.opacity = '';
+      if(cb) cb();
+    }, 420);
+  }
+  function fadeIn(el) {
+    el.classList.remove('hidden');
+    el.style.opacity = 0;
+    el.style.transition = "opacity 0.5s ease";
+    requestAnimationFrame(() => {
+      el.style.opacity = 1;
+    });
+  }
+  function switchView(from, to) {
+    fadeOut(from, () => {
+      fadeIn(to);
+      trapFocus(to);
+    });
+  }
+
+  // Controls state update
+  function updatePlayPauseBtn() {
+    playPauseBtn.textContent = isPlaying ? '❚❚' : '►';
+    playPauseBtn.setAttribute('aria-label', isPlaying ? 'Pausar canción' : 'Reproducir canción');
+    playPauseBtn.setAttribute('title', isPlaying ? 'Pausar' : 'Reproducir');
+  }
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }
+  function updateProgress() {
+    if(audio.duration) {
+      const percent = (audio.currentTime / audio.duration) * 100;
+      progressBar.style.width = `${percent}%`;
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      durationTimeEl.textContent = formatTime(audio.duration);
+      progressContainer.setAttribute('aria-valuenow', Math.floor(percent));
+    }
+    animationFrameId = requestAnimationFrame(updateProgress);
+  }
+
+  // Play/pause toggle
+  playPauseBtn.addEventListener('click', () => {
+    if(isPlaying) {
+      audio.pause();
+    } else {
+      audio.play();
+    }
+  });
+
+  audio.addEventListener('play', () => {
+    isPlaying = true;
+    updatePlayPauseBtn();
+    animationFrameId = requestAnimationFrame(updateProgress);
+  });
+  audio.addEventListener('pause', () => {
+    isPlaying = false;
+    updatePlayPauseBtn();
+    cancelAnimationFrame(animationFrameId);
+  });
+  audio.addEventListener('ended', () => {
+    isPlaying = false;
+    updatePlayPauseBtn();
+    cancelAnimationFrame(animationFrameId);
+    progressBar.style.width = '0%';
+    currentTimeEl.textContent = '0:00';
+  });
+
+  // Clicking progress bar to seek
+  progressContainer.addEventListener('click', e => {
+    const rect = progressContainer.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const width = rect.width;
+    const clickPercent = clickX / width;
+    if(audio.duration) {
+      audio.currentTime = clickPercent * audio.duration;
+      updateProgress();
+    }
+  });
+
+  // Keyboard control for slider (left/right arrow)
+  progressContainer.addEventListener('keydown', e => {
+    if(!audio.duration) return;
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      audio.currentTime = Math.max(0, audio.currentTime - 5);
+      updateProgress();
+    } else if(e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
+      updateProgress();
+    }
+  });
+
+  // Volume control
+  volumeSlider.value = audio.volume;
+  volumeSlider.addEventListener('input', e => {
+    audio.volume = e.target.value;
+    volumeSlider.setAttribute('aria-valuenow', e.target.value);
+  });
+
+  // Yes button click: show options
+  yesBtn.onclick = () => {
+    noClickCount = 0;
+    resetNoBtnPosition();
+    sadMessage.classList.add('hidden');
+    sadMessage.textContent = '';
+    switchView(initialPage, yesPage);
+  };
+
+  // Buttons inside yesPage
+  btnMessage.onclick = () => {
+    switchView(yesPage, messagePage);
+  };
+  btnMusic.onclick = () => {
+    switchView(yesPage, musicPage);
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+  };
+  backToYes.onclick = () => {
+    switchView(messagePage, yesPage);
+  };
+  backToYesMusic.onclick = () => {
+    audio.pause();
+    switchView(musicPage, yesPage);
+  };
+  backToInitialFromYes.onclick = () => {
+    audio.pause();
+    switchView(yesPage, initialPage);
+  };
+
+  // No button logic with animation and final sad message
+  noBtn.onclick = () => {
+    noClickCount++;
+    if (noClickCount < 3) {
+      animateNoBtnMove();
+    } else {
+      showSadMessage();
+      disableNoBtn();
+    }
+  };
+
+  function animateNoBtnMove() {
+    noBtn.classList.add('moving');
+    const containerRect = initialPage.getBoundingClientRect();
+    const maxX = containerRect.width - noBtn.offsetWidth - 10;
+    const maxY = containerRect.height - noBtn.offsetHeight - 10;
+
+    let newX, newY;
+    let tries = 0;
+    do {
+      newX = Math.floor(Math.random() * maxX);
+      newY = Math.floor(Math.random() * maxY);
+      tries++;
+    } while (
+      Math.abs(newX - noBtn.offsetLeft) < 70 &&
+      Math.abs(newY - noBtn.offsetTop) < 70 &&
+      tries < 20
+    );
+
+    noBtn.style.position = 'absolute';
+    noBtn.style.left = newX + "px";
+    noBtn.style.top = newY + "px";
+
+    setTimeout(() => noBtn.classList.remove('moving'), 400);
+  }
+  function resetNoBtnPosition() {
+    noBtn.style.position = 'static';
+    noBtn.style.left = '';
+    noBtn.style.top = '';
+    noBtn.style.opacity = '1';
+    noBtn.style.cursor = 'pointer';
+    noBtn.disabled = false;
+  }
+  function disableNoBtn() {
+    noBtn.disabled = true;
+    noBtn.style.cursor = 'default';
+    noBtn.style.opacity = '0.5';
+    noBtn.style.position = 'static';
+    sadMessage.classList.remove('hidden');
+    sadMessage.textContent = '😢 ¡Qué triste! Quizás algún día cambies de opinión...';
+  }
+
+  // Keyboard navigation improvements
+  document.addEventListener('keydown', e => {
+    if(e.key === "Escape") {
+      if(!initialPage.classList.contains('hidden')) return;
+      if(!yesPage.classList.contains('hidden')) backToInitialFromYes.click();
+      if(!messagePage.classList.contains('hidden')) backToYes.click();
+      if(!musicPage.classList.contains('hidden')) backToYesMusic.click();
+    }
+  });
+
+  // Initialize play/pause button state
+  updatePlayPauseBtn();
+
+</script>
+</body>
+</html>
+
